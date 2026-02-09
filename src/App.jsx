@@ -156,6 +156,15 @@ export default function App() {
   path="/manpower"
   element={
     <PageFrame title="📊 맨파워 (구글시트)">
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+        <a
+          href="https://docs.google.com/spreadsheets/d/1wPceCL3lZ6Bi1jiFJQ7bSxYByUsscL-4vfRt_R4Owoc/view?usp=sharing"
+          style={{ fontSize: 14, color: "#2563eb", textDecoration: "underline" }}
+        >
+          구글시트에서 열기
+        </a>
+      </div>
+
       <iframe
         src="https://docs.google.com/spreadsheets/d/1wPceCL3lZ6Bi1jiFJQ7bSxYByUsscL-4vfRt_R4Owoc/edit"
         style={{ width: "100%", height: "100%", border: "none" }}
@@ -164,6 +173,7 @@ export default function App() {
     </PageFrame>
   }
 />
+
           <Route
             path="/minutes"
             element={
