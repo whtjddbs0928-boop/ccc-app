@@ -66,3 +66,155 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+  color: #111;
+  background: #fff;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: #f7f7f7; }
+
+.appShell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+}
+
+.sidebarWrap { position: relative; z-index: 5; }
+
+.sidebar {
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  border-right: 1px solid #e7e7e7;
+  background: #fbfbfb;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.brand { display: flex; gap: 10px; align-items: center; padding: 8px; }
+.brandDot { width: 12px; height: 12px; border-radius: 999px; background: #111; }
+.brandTitle { font-weight: 800; }
+.brandSub { font-size: 12px; color: #666; margin-top: 2px; }
+
+.nav { display: flex; flex-direction: column; gap: 6px; padding: 4px; }
+.navSection { margin-top: 10px; font-size: 12px; color: #777; padding: 6px 8px; }
+
+.navItem {
+  text-decoration: none;
+  color: #111;
+  padding: 10px 10px;
+  border-radius: 10px;
+  display: block;
+  border: 1px solid transparent;
+}
+.navItem:hover { background: #f1f1f1; }
+.navItem.active { background: #111; color: #fff; }
+
+.sidebarFooter {
+  margin-top: auto;
+  padding: 10px 8px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #eaeaea;
+}
+.small { font-size: 12px; color: #666; }
+
+.main {
+  padding: 18px;
+}
+
+.pageHeader {
+  margin-bottom: 12px;
+}
+.pageTitle {
+  margin: 0;
+  font-size: 22px;
+}
+
+.pageBody { display: flex; flex-direction: column; gap: 12px; }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+.card {
+  background: #fff;
+  border: 1px solid #e9e9e9;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+.cardTitle { font-weight: 800; }
+.cardSub { margin-top: 6px; color: #555; font-size: 13px; }
+.cardHint { margin-top: 10px; color: #888; font-size: 12px; line-height: 1.4; }
+.cardBtn {
+  display: inline-block;
+  margin-top: 12px;
+  background: #111;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.empty { padding: 20px; }
+.emptyTitle { font-weight: 900; }
+.emptyText { margin-top: 8px; color: #666; line-height: 1.5; }
+
+/* 모바일 */
+.mobileTop {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fbfbfb;
+  border-bottom: 1px solid #e7e7e7;
+  height: 52px;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+}
+.iconBtn {
+  border: 1px solid #e7e7e7;
+  background: #fff;
+  border-radius: 12px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 18px;
+}
+.mobileTitle { font-weight: 900; }
+
+.overlay {
+  display: none;
+}
+
+/* 반응형: 900px 이하에서 사이드바를 슬라이드로 */
+@media (max-width: 900px) {
+  .appShell { grid-template-columns: 1fr; }
+  .mobileTop { display: flex; }
+  .main { padding: 14px; }
+
+  .sidebarWrap {
+    position: fixed;
+    left: -320px;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    transition: left 180ms ease;
+  }
+  .sidebarWrap.open { left: 0; }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    z-index: 4;
+  }
+
+  .grid { grid-template-columns: 1fr; }
+}
