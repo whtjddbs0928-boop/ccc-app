@@ -153,13 +153,17 @@ export default function App() {
           <Route path="/" element={<Home />} />
 
           <Route
-            path="/manpower"
-            element={
-              <PageFrame title="📊 맨파워 (구글시트)">
-                <LinkCard url={PAGES[0].url} />
-              </PageFrame>
-            }
-          />
+  path="/manpower"
+  element={
+    <PageFrame title="📊 맨파워 (구글시트)">
+      <iframe
+        src="https://docs.google.com/spreadsheets/d/1wPceCL3lZ6Bi1jiFJQ7bSxYByUsscL-4vfRt_R4Owoc/edit"
+        style={{ width: "100%", height: "100%", border: "none" }}
+        title="맨파워 구글시트"
+      />
+    </PageFrame>
+  }
+/>
           <Route
             path="/minutes"
             element={
