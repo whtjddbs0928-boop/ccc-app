@@ -22,3 +22,12 @@ export default defineConfig({
     })
   ]
 });
+
+VitePWA({
+  registerType: "autoUpdate",
+  workbox: {
+    clientsClaim: true,
+    skipWaiting: true,
+  },
+  // ...manifest 그대로
+})
