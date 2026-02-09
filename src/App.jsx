@@ -155,24 +155,21 @@ export default function App() {
           <Route
   path="/manpower"
   element={
-    <PageFrame title="📊 맨파워 (구글시트)">
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
-        <a
-          href="https://docs.google.com/spreadsheets/d/1wPceCL3lZ6Bi1jiFJQ7bSxYByUsscL-4vfRt_R4Owoc/view?usp=sharing"
-          style={{ fontSize: 14, color: "#2563eb", textDecoration: "underline" }}
-        >
-          구글시트에서 열기
-        </a>
-      </div>
-
+    <div style={{ width: "100vw", height: "100dvh" }}>
       <iframe
         src="https://docs.google.com/spreadsheets/d/1wPceCL3lZ6Bi1jiFJQ7bSxYByUsscL-4vfRt_R4Owoc/edit"
-        style={{ width: "100%", height: "100%", border: "none" }}
+        style={{
+          width: "100%",
+          height: "100dvh",
+          border: "none",
+          display: "block",
+        }}
         title="맨파워 구글시트"
       />
-    </PageFrame>
+    </div>
   }
 />
+
 
           <Route
             path="/minutes"
