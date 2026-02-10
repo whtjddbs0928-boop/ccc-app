@@ -11,6 +11,13 @@ const PAGES = [
   { key: "bridge", label: "🌉 기능순 - 브릿지순", path: "/teams/bridge", type: "placeholder" },
   { key: "tongtong", label: "🕊 기능순 - 통통순(통일순)", path: "/teams/tongtong", type: "placeholder" },
   { key: "praise", label: "🎶 기능순 - 찬양순", path: "/teams/praise", type: "placeholder" }
+  
+  {
+    key: "shoutout",
+    label: "🎉 박은서 샤라웃",
+    path: "/shoutout",
+    type: "placeholder"
+  }
 ];
 
 function PageFrame({ title, children }) {
@@ -127,6 +134,11 @@ function Sidebar({ onNavigate }) {
     </aside>
   );
 }
+
+<div className={"sidebarWrap" + (mobileOpen ? " open" : "")}>
+  <EunseoSidebar />
+</div>
+
 
 export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
