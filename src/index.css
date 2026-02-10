@@ -114,6 +114,10 @@ body { margin: 0; background: #f7f7f7; }
 }
 .navItem:hover { background: #f1f1f1; }
 .navItem.active { background: #111; color: #fff; }
+.navItemSub {
+  padding-left: 26px;
+  font-size: 13px;
+}
 
 .sidebarFooter {
   margin-top: auto;
@@ -164,6 +168,14 @@ body { margin: 0; background: #f7f7f7; }
 .empty { padding: 20px; }
 .emptyTitle { font-weight: 900; }
 .emptyText { margin-top: 8px; color: #666; line-height: 1.5; }
+
+.list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: #333;
+  line-height: 1.6;
+}
+.list li { margin: 4px 0; }
 
 /* 모바일 */
 .mobileTop {
