@@ -1,20 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 type Props = {
   title: string;
   editUrl: string;
   embedUrl: string;
   buttonLabel?: string;
+  responsiveMode?: "auto" | "none";
 };
 
-export function DocHub({ title, editUrl, embedUrl, buttonLabel }: Props) {
+function getEditUrlWithMinimal(editUrl: string): string {
+  const sep = editUrl.includes("?") ? "&" : "?";
+  return `${editUrl}${sep}rm=minimal`;
+}
+
+export function DocHub({
+  title,
+  editUrl,
+  embedUrl,
+  buttonLabel,
+  responsiveMode = "none",
+}: Props) {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const iframeSrc =
+    responsiveMode === "auto" && isDesktop ? getEditUrlWithMinimal(editUrl) : embedUrl;
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100%",
         width: "100%",
+        height: "100%",
+        minHeight: 0,
       }}
     >
       <div
@@ -23,6 +49,7 @@ export function DocHub({ title, editUrl, embedUrl, buttonLabel }: Props) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flex: "0 0 auto",
         }}
       >
         <div style={{ fontWeight: 700 }}>{title}</div>
@@ -37,18 +64,20 @@ export function DocHub({ title, editUrl, embedUrl, buttonLabel }: Props) {
 
       <div
         style={{
-          flex: 1,
+          flex: "1 1 auto",
           width: "100%",
+          minHeight: 0,
           overflow: "hidden",
         }}
       >
         <iframe
-          src={embedUrl}
+          src={iframeSrc}
           title={title}
           style={{
             width: "100%",
             height: "100%",
             border: "none",
+            display: "block",
           }}
           loading="eager"
         />

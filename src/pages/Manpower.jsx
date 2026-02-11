@@ -8,6 +8,7 @@ export function ManpowerPage() {
       editUrl={MANPOWER_EDIT_URL}
       embedUrl={MANPOWER_EMBED_URL}
       buttonLabel="구글시트 열기 →"
+      responsiveMode="auto"
     />
   );
 }
