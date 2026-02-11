@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, Navigate, useParams } from "react-router-dom";
+import { Routes, Route, NavLink, Navigate, useParams, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { DocHub } from "./components/Dochub";
 import {
@@ -413,6 +413,9 @@ export default function App() {
     );
   };
 
+  const location = useLocation();
+  const isFullBleed = ["/manpower", "/minutes", "/schedule"].includes(location.pathname);
+
   return (
     <div className="appShell">
       {/* 모바일 헤더 */}
@@ -430,7 +433,7 @@ export default function App() {
         <Sidebar onNavigate={() => setMobileOpen(false)} familyGroups={familyGroups} />
       </div>
 
-      <main className="main">
+      <main className={"main" + (isFullBleed ? " main--fullBleed" : "")}>
         <Routes>
           <Route path="/" element={<Home />} />
 

@@ -133,6 +133,9 @@ body { margin: 0; background: #f7f7f7; }
 .main {
   padding: 18px;
 }
+.main.main--fullBleed {
+  padding: 0;
+}
 
 .pageHeader {
   margin-bottom: 12px;
