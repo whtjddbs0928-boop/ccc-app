@@ -1,7 +1,12 @@
 import { Routes, Route, NavLink, Navigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { DocHub } from "./components/Dochub";
-import { MINUTES_EDIT_URL, MINUTES_EMBED_URL } from "./config/docs";
+import {
+  CCC_CALENDAR_EMBED_URL,
+  CCC_CALENDAR_OPEN_URL,
+  MINUTES_EDIT_URL,
+  MINUTES_EMBED_URL,
+} from "./config/docs";
 import { ManpowerPage } from "./pages/Manpower";
 
 const FAMILY_GROUPS_INITIAL = [
@@ -444,7 +449,17 @@ export default function App() {
             element={<FamilyGroupPage groups={familyGroups} onUpdateGroup={handleUpdateFamilyGroup} />}
           />
           <Route path="/curriculum" element={<Placeholder title="📚 가족순별 커리큘럼" />} />
-          <Route path="/schedule" element={<Placeholder title="📅 CCC 전체 일정표" />} />
+          <Route
+            path="/schedule"
+            element={
+              <DocHub
+                title="📅 CCC 전체 일정표 (Google Calendar)"
+                editUrl={CCC_CALENDAR_OPEN_URL}
+                embedUrl={CCC_CALENDAR_EMBED_URL}
+                buttonLabel="구글캘린더 열기 →"
+              />
+            }
+          />
 
           <Route path="/teams/bridge" element={<Placeholder title="🌉 기능순 - 브릿지순" />} />
           <Route path="/teams/tongtong" element={<Placeholder title="🕊 기능순 - 통통순(통일순)" />} />
