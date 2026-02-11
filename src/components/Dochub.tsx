@@ -1,58 +1,56 @@
-import React, { useState } from "react";
+import React from "react";
 
 type Props = {
   title: string;
   editUrl: string;
   embedUrl: string;
-  /** 기본: "문서 열기 →" */
   buttonLabel?: string;
 };
 
-export function DocHub({ title, editUrl, embedUrl, buttonLabel = "문서 열기 →" }: Props) {
-  const [loaded, setLoaded] = useState(false);
-
-  const openDoc = () => {
-    window.location.href = editUrl;
-  };
-
+export function DocHub({ title, editUrl, embedUrl, buttonLabel }: Props) {
   return (
     <div
       style={{
-        height: "calc(100dvh - 56px)",
         display: "flex",
         flexDirection: "column",
+        height: "100%",
+        width: "100%",
       }}
     >
-      <div style={{ padding: 12, display: "flex", gap: 8, alignItems: "center", justifyContent: "space-between" }}>
+      <div
+        style={{
+          padding: "12px 16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <div style={{ fontWeight: 700 }}>{title}</div>
-        <button type="button" className="cardBtn" onClick={openDoc}>
-          {buttonLabel}
+        <button
+          type="button"
+          className="cardBtn"
+          onClick={() => (window.location.href = editUrl)}
+        >
+          {buttonLabel ?? "열기 →"}
         </button>
-      </div>
-
-      <div style={{ padding: "0 12px 8px" }}>
-        <div className="cardHint" style={{ marginBottom: 0 }}>
-          {loaded ? "문서가 안 보이면 위 버튼으로 열어주세요." : "불러오는 중… (안 뜨면 위 버튼으로 열어주세요)"}
-        </div>
       </div>
 
       <div
         style={{
           flex: 1,
-          minHeight: 0,
+          width: "100%",
           overflow: "hidden",
-          border: "1px solid rgba(0,0,0,0.08)",
-          borderRadius: 14,
-          background: "#fff",
         }}
       >
         <iframe
           src={embedUrl}
           title={title}
-          style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            border: "none",
+          }}
           loading="eager"
-          referrerPolicy="no-referrer-when-downgrade"
-          onLoad={() => setLoaded(true)}
         />
       </div>
     </div>
