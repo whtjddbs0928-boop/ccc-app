@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  base: process.env.BASE_PATH || "/",
   plugins: [
     react(),
     VitePWA({
@@ -22,12 +23,3 @@ export default defineConfig({
     })
   ]
 });
-
-VitePWA({
-  registerType: "autoUpdate",
-  workbox: {
-    clientsClaim: true,
-    skipWaiting: true,
-  },
-  // ...manifest 그대로
-})
