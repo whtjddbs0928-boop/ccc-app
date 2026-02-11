@@ -1,48 +1,56 @@
-// src/components/DocHub.tsx
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {
   title: string;
-  viewUrl: string; // 읽기 링크 (혹은 published/preview)
-  editUrl: string; // 편집 링크
-  embedUrl?: string; // 가능하면 iframe용
+  editUrl: string;
+  embedUrl: string;
+  /** 기본: "문서 열기 →" */
+  buttonLabel?: string;
 };
 
-export function DocHub({ title, viewUrl, editUrl, embedUrl }: Props) {
-  const openEdit = () => {
+export function DocHub({ title, editUrl, embedUrl, buttonLabel = "문서 열기 →" }: Props) {
+  const [loaded, setLoaded] = useState(false);
+
+  const openDoc = () => {
     // iOS PWA에서 target=_blank 보다 현재 탭 이동이 안정적
     window.location.href = editUrl;
   };
 
-  const openView = () => {
-    window.location.href = viewUrl;
-  };
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>{title}</h2>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={openView}>보기</button>
-          <button onClick={openEdit}>편집하기</button>
-        </div>
+    <div style={{ height: "100%", minHeight: "calc(100dvh - 56px)" }}>
+      <div style={{ padding: 12, display: "flex", gap: 8, alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ fontWeight: 700 }}>{title}</div>
+        <button type="button" className="cardBtn" onClick={openDoc}>
+          {buttonLabel}
+        </button>
       </div>
 
-      {embedUrl ? (
-        <iframe
-          src={embedUrl}
-          title={title}
-          style={{ flex: 1, width: "100%", border: "1px solid #e5e5e5", borderRadius: 12 }}
-        />
-      ) : (
-        <div style={{ padding: 16, border: "1px solid #e5e5e5", borderRadius: 12 }}>
-          <p style={{ marginTop: 0 }}>
-            미리보기가 제한될 수 있어요. 아래 버튼으로 열어주세요.
-          </p>
-          <button onClick={openView}>문서 열기</button>
+      <div style={{ padding: "0 12px 12px" }}>
+        <div className="cardHint" style={{ marginBottom: 10 }}>
+          {loaded ? "문서가 안 보이면 위 버튼으로 열어주세요." : "불러오는 중… (안 뜨면 위 버튼으로 열어주세요)"}
         </div>
-      )}
+
+        <div
+          style={{
+            width: "100%",
+            height: "calc(100dvh - 56px - 12px - 12px - 44px)",
+            minHeight: 420,
+            border: "1px solid rgba(0,0,0,0.08)",
+            borderRadius: 14,
+            overflow: "hidden",
+            background: "#fff",
+          }}
+        >
+          <iframe
+            src={embedUrl}
+            title={title}
+            style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+            loading="eager"
+            referrerPolicy="no-referrer-when-downgrade"
+            onLoad={() => setLoaded(true)}
+          />
+        </div>
+      </div>
     </div>
   );
 }
-

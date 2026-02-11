@@ -1,10 +1,8 @@
 import { Routes, Route, NavLink, Navigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-
-const MINUTES_EDIT_URL =
-  "https://docs.google.com/document/d/1gTvR915kWAjxR2Mh-V5AAd6sCk-5mSYgWCa5tPYMx-8/edit?tab=t.hi2h7chm5z9";
-const MINUTES_EMBED_URL =
-  "https://docs.google.com/document/d/1gTvR915kWAjxR2Mh-V5AAd6sCk-5mSYgWCa5tPYMx-8/preview?tab=t.hi2h7chm5z9";
+import { DocHub } from "./components/Dochub";
+import { MINUTES_EDIT_URL, MINUTES_EMBED_URL } from "./config/docs";
+import { ManpowerPage } from "./pages/Manpower";
 
 const FAMILY_GROUPS_INITIAL = [
   {
@@ -93,7 +91,6 @@ const FAMILY_GROUPS_INITIAL = [
   },
 ];
 
-
 // ✅ 여기 URL만 나중에 너 구글 문서/시트 링크로 바꾸면 됨
 const PAGES = [
   { key: "manpower", label: "📊 맨파워 (구글시트)", path: "/manpower", type: "link", url: "https://docs.google.com/spreadsheets/" },
@@ -104,7 +101,6 @@ const PAGES = [
   { key: "bridge", label: "🌉 기능순 - 브릿지순", path: "/teams/bridge", type: "placeholder" },
   { key: "tongtong", label: "🕊 기능순 - 통통순(통일순)", path: "/teams/tongtong", type: "placeholder" },
   { key: "praise", label: "🎶 기능순 - 찬양순", path: "/teams/praise", type: "placeholder" },
-  
 ];
 
 function PageFrame({ title, children }) {
@@ -156,49 +152,13 @@ function Placeholder({ title }) {
 }
 
 function MinutesPage() {
-  const [loaded, setLoaded] = useState(false);
-
-  const openDoc = () => {
-    // iOS PWA에서 target=_blank 보다 현재 탭 이동이 안정적
-    window.location.href = MINUTES_EDIT_URL;
-  };
-
   return (
-    <div style={{ height: "100%", minHeight: "calc(100dvh - 56px)" }}>
-      <div style={{ padding: 12, display: "flex", gap: 8, alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontWeight: 700 }}>📝 대순장 회의록 (구글닥스)</div>
-        <button className="cardBtn" onClick={openDoc}>
-          구글문서 열기 →
-        </button>
-      </div>
-
-      <div style={{ padding: "0 12px 12px" }}>
-        <div className="cardHint" style={{ marginBottom: 10 }}>
-          {loaded ? "문서가 안 보이면 위 버튼으로 열어주세요." : "불러오는 중… (안 뜨면 위 버튼으로 열어주세요)"}
-        </div>
-
-        <div
-          style={{
-            width: "100%",
-            height: "calc(100dvh - 56px - 12px - 12px - 44px)",
-            minHeight: 420,
-            border: "1px solid rgba(0,0,0,0.08)",
-            borderRadius: 14,
-            overflow: "hidden",
-            background: "#fff",
-          }}
-        >
-          <iframe
-            src={MINUTES_EMBED_URL}
-            title="대순장 회의록"
-            style={{ width: "100%", height: "100%", border: "none", display: "block" }}
-            loading="eager"
-            referrerPolicy="no-referrer-when-downgrade"
-            onLoad={() => setLoaded(true)}
-          />
-        </div>
-      </div>
-    </div>
+    <DocHub
+      title="📝 대순장 회의록 (구글닥스)"
+      editUrl={MINUTES_EDIT_URL}
+      embedUrl={MINUTES_EMBED_URL}
+      buttonLabel="구글문서 열기 →"
+    />
   );
 }
 
@@ -351,7 +311,7 @@ function Home() {
           <div className="cardTitle">빠른 시작</div>
           <div className="cardSub">왼쪽 메뉴에서 문서를 선택해.</div>
           <div className="cardHint">
-            다음 단계: 각 메뉴에 구글 시트/닥스 “웹에 게시” 링크를 넣고, iframe 임베드로 바로 보여주기.
+            다음 단계: 각 메뉴에 구글 시트/닥스 "웹에 게시" 링크를 넣고, iframe 임베드로 바로 보여주기.
           </div>
         </div>
         <div className="card">
@@ -469,24 +429,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
 
-          <Route
-  path="/manpower"
-  element={
-    <div style={{ width: "100vw", height: "100dvh" }}>
-      <iframe
-        src="https://docs.google.com/spreadsheets/d/1wPceCL3lZ6Bi1jiFJQ7bSxYByUsscL-4vfRt_R4Owoc/edit"
-        style={{
-          width: "100%",
-          height: "100dvh",
-          border: "none",
-          display: "block",
-        }}
-        title="맨파워 구글시트"
-      />
-    </div>
-  }
-/>
-
+          <Route path="/manpower" element={<ManpowerPage />} />
 
           <Route
             path="/minutes"
