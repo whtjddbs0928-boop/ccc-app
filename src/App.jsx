@@ -1,5 +1,5 @@
 import { Routes, Route, NavLink, Navigate, useParams, useLocation } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { DocHub } from "./components/Dochub";
 import {
   CCC_CALENDAR_EMBED_URL,
@@ -8,6 +8,7 @@ import {
   MINUTES_EMBED_URL,
 } from "./config/docs";
 import { ManpowerPage } from "./pages/Manpower";
+import { NotePage } from "./pages/NotePage";
 
 const FAMILY_GROUPS_INITIAL = [
   {
@@ -96,17 +97,32 @@ const FAMILY_GROUPS_INITIAL = [
   },
 ];
 
-// ✅ 여기 URL만 나중에 너 구글 문서/시트 링크로 바꾸면 됨
-const PAGES = [
-  { key: "manpower", label: "📊 맨파워 (구글시트)", path: "/manpower", type: "link", url: "https://docs.google.com/spreadsheets/" },
-  { key: "minutes", label: "📝 대순장 회의록 (구글닥스)", path: "/minutes", type: "link", url: MINUTES_EDIT_URL },
-  { key: "family", label: "👨‍👩‍👧 가족순별 맨파워", path: "/family", type: "placeholder" },
-  { key: "curriculum", label: "📚 가족순별 커리큘럼", path: "/curriculum", type: "placeholder" },
-  { key: "schedule", label: "📅 CCC 전체 일정표", path: "/schedule", type: "placeholder" },
-  { key: "bridge", label: "🌉 기능순 - 브릿지순", path: "/teams/bridge", type: "placeholder" },
-  { key: "tongtong", label: "🕊 기능순 - 통통순(통일순)", path: "/teams/tongtong", type: "placeholder" },
-  { key: "praise", label: "🎶 기능순 - 찬양순", path: "/teams/praise", type: "placeholder" },
+const EDIT_MODE_KEY = "ccc-edit-mode";
+const PAGES_STORAGE_KEY = "ccc-pages-v1";
+const FAMILY_GROUPS_STORAGE_KEY = "ccc-family-groups-v1";
+
+const PAGES_INITIAL = [
+  { id: "manpower", title: "📊 맨파워 (구글시트)", path: "/manpower", type: "link", fixed: true },
+  { id: "minutes", title: "📝 대순장 회의록 (구글닥스)", path: "/minutes", type: "link", fixed: true },
+  { id: "family", title: "👨‍👩‍👧 가족순별 맨파워", path: "/family", type: "placeholder", fixed: true },
+  { id: "curriculum", title: "📚 가족순별 커리큘럼", path: "/curriculum", type: "placeholder", fixed: true },
+  { id: "schedule", title: "📅 CCC 전체 일정표", path: "/schedule", type: "placeholder", fixed: true },
+  { id: "bridge", title: "🌉 기능순 - 브릿지순", path: "/teams/bridge", type: "placeholder", fixed: true },
+  { id: "tongtong", title: "🕊 기능순 - 통통순(통일순)", path: "/teams/tongtong", type: "placeholder", fixed: true },
+  { id: "praise", title: "🎶 기능순 - 찬양순", path: "/teams/praise", type: "placeholder", fixed: true },
 ];
+
+function readLocalStorageJSON(key, fallbackValue) {
+  try {
+    const saved = window.localStorage.getItem(key);
+    if (!saved) {
+      return fallbackValue;
+    }
+    return JSON.parse(saved);
+  } catch {
+    return fallbackValue;
+  }
+}
 
 function PageFrame({ title, children }) {
   return (
@@ -115,29 +131,6 @@ function PageFrame({ title, children }) {
         <h1 className="pageTitle">{title}</h1>
       </div>
       <div className="pageBody">{children}</div>
-    </div>
-  );
-}
-
-function LinkCard({ url }) {
-  const hostname = useMemo(() => {
-    try {
-      return new URL(url).hostname;
-    } catch {
-      return url;
-    }
-  }, [url]);
-
-  return (
-    <div className="card">
-      <div className="cardTitle">외부 문서</div>
-      <div className="cardSub">{hostname}</div>
-      <a className="cardBtn" href={url} target="_blank" rel="noreferrer">
-        열기 →
-      </a>
-      <div className="cardHint">
-        * iOS 사파리에서 구글 문서/시트 임베드는 권한/쿠키 설정에 따라 로그인 팝업이 뜰 수 있어.
-      </div>
     </div>
   );
 }
@@ -167,26 +160,17 @@ function MinutesPage() {
   );
 }
 
-function FamilyGroupPage({ groups, onUpdateGroup }) {
+function FamilyGroupPage({ groups, onUpdateGroup, editMode }) {
   const { groupId } = useParams();
   const group = groups.find((g) => g.id === groupId);
 
   const [editing, setEditing] = useState(false);
+  const [groupTitle, setGroupTitle] = useState(group?.title ?? "");
   const [leader, setLeader] = useState(group?.leader ?? "");
   const [subLeadersText, setSubLeadersText] = useState(group?.subLeaders.join(", ") ?? "");
   const [membersBlock1, setMembersBlock1] = useState(group?.membersBlock1 ?? "");
   const [membersBlock2, setMembersBlock2] = useState(group?.membersBlock2 ?? "");
   const [notesText, setNotesText] = useState((group?.notes ?? []).join("\n"));
-
-  useEffect(() => {
-    if (!group) return;
-    setEditing(false);
-    setLeader(group.leader);
-    setSubLeadersText(group.subLeaders.join(", "));
-    setMembersBlock1(group.membersBlock1);
-    setMembersBlock2(group.membersBlock2);
-    setNotesText((group.notes ?? []).join("\n"));
-  }, [groupId, group]);
 
   if (!group) {
     return <Navigate to="/family" replace />;
@@ -203,6 +187,7 @@ function FamilyGroupPage({ groups, onUpdateGroup }) {
       .filter(Boolean);
 
     onUpdateGroup(group.id, {
+      title: groupTitle.trim() || group.title,
       leader: leader.trim() || group.leader,
       subLeaders,
       membersBlock1: membersBlock1.trim(),
@@ -214,6 +199,19 @@ function FamilyGroupPage({ groups, onUpdateGroup }) {
 
   return (
     <PageFrame title={group.title}>
+      <div className="card">
+        <div className="cardSub">이름</div>
+        {editing ? (
+          <input
+            value={groupTitle}
+            onChange={(e) => setGroupTitle(e.target.value)}
+            style={{ width: "100%", marginTop: 4, padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+          />
+        ) : (
+          <div style={{ marginTop: 8 }}>{group.title}</div>
+        )}
+      </div>
+
       <div className="card">
         <div className="cardSub">리더십</div>
         {editing ? (
@@ -295,14 +293,15 @@ function FamilyGroupPage({ groups, onUpdateGroup }) {
       </div>
 
       <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-        {editing ? (
-          <>
-            <button onClick={() => setEditing(false)}>취소</button>
-            <button onClick={handleSave}>저장</button>
-          </>
-        ) : (
-          <button onClick={() => setEditing(true)}>편집</button>
-        )}
+        {editMode &&
+          (editing ? (
+            <>
+              <button onClick={() => setEditing(false)}>취소</button>
+              <button onClick={handleSave}>저장</button>
+            </>
+          ) : (
+            <button onClick={() => setEditing(true)}>편집</button>
+          ))}
       </div>
     </PageFrame>
   );
@@ -329,7 +328,87 @@ function Home() {
   );
 }
 
-function Sidebar({ onNavigate, familyGroups }) {
+function Sidebar({
+  onNavigate,
+  familyGroups,
+  pages,
+  editMode,
+  onToggleEditMode,
+  onRenamePage,
+  onAddCategory,
+}) {
+  const [editingPageId, setEditingPageId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState("");
+
+  const documentPageIds = ["manpower", "minutes"];
+  const familyPageIds = ["family", "curriculum", "schedule"];
+  const teamPageIds = ["bridge", "tongtong", "praise"];
+
+  const documentPages = pages.filter((page) => documentPageIds.includes(page.id));
+  const familyPages = pages.filter((page) => familyPageIds.includes(page.id));
+  const teamPages = pages.filter((page) => teamPageIds.includes(page.id));
+  const notePages = pages.filter((page) => page.type === "note");
+
+  const beginRename = (page) => {
+    setEditingPageId(page.id);
+    setEditingTitle(page.title);
+  };
+
+  const commitRename = (page) => {
+    const nextTitle = editingTitle.trim() || page.title;
+    onRenamePage(page.id, nextTitle);
+    setEditingPageId(null);
+    setEditingTitle("");
+  };
+
+  const renderPageLink = (page, extraClassName = "") => (
+    <div className="navItemRow" key={page.id}>
+      <NavLink
+        to={page.path}
+        className={({ isActive }) => "navItem" + (extraClassName ? ` ${extraClassName}` : "") + (isActive ? " active" : "")}
+        onClick={onNavigate}
+      >
+        {editingPageId === page.id ? (
+          <input
+            className="navTitleInput"
+            value={editingTitle}
+            autoFocus
+            onClick={(e) => e.preventDefault()}
+            onChange={(e) => setEditingTitle(e.target.value)}
+            onBlur={() => commitRename(page)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitRename(page);
+              }
+              if (e.key === "Escape") {
+                e.preventDefault();
+                setEditingPageId(null);
+                setEditingTitle("");
+              }
+            }}
+          />
+        ) : (
+          page.title
+        )}
+      </NavLink>
+      {editMode && (
+        <button
+          type="button"
+          className="navEditBtn"
+          aria-label={`${page.title} 이름 수정`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            beginRename(page);
+          }}
+        >
+          ✎
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -341,23 +420,19 @@ function Sidebar({ onNavigate, familyGroups }) {
       </div>
 
       <nav className="nav">
+        <button type="button" className="editModeToggle" onClick={onToggleEditMode}>
+          {editMode ? "편집 모드 ON" : "편집 모드 OFF"}
+        </button>
+
         <NavLink to="/" end className={({ isActive }) => "navItem" + (isActive ? " active" : "")} onClick={onNavigate}>
           🏠 홈
         </NavLink>
 
         <div className="navSection">문서</div>
-        {PAGES.slice(0, 2).map((p) => (
-          <NavLink key={p.key} to={p.path} className={({ isActive }) => "navItem" + (isActive ? " active" : "")} onClick={onNavigate}>
-            {p.label}
-          </NavLink>
-        ))}
+        {documentPages.map((page) => renderPageLink(page))}
 
         <div className="navSection">가족순</div>
-        {PAGES.slice(2, 5).map((p) => (
-          <NavLink key={p.key} to={p.path} className={({ isActive }) => "navItem" + (isActive ? " active" : "")} onClick={onNavigate}>
-            {p.label}
-          </NavLink>
-        ))}
+        {familyPages.map((page) => renderPageLink(page))}
         {familyGroups.map((g) => (
           <NavLink
             key={g.id}
@@ -370,38 +445,66 @@ function Sidebar({ onNavigate, familyGroups }) {
         ))}
 
         <div className="navSection">기능순</div>
-        {PAGES.slice(5).map((p) => (
-          <NavLink key={p.key} to={p.path} className={({ isActive }) => "navItem" + (isActive ? " active" : "")} onClick={onNavigate}>
-            {p.label}
-          </NavLink>
-        ))}
+        {teamPages.map((page) => renderPageLink(page))}
+
+        {notePages.length > 0 && <div className="navSection">노트</div>}
+        {notePages.map((page) => renderPageLink(page))}
       </nav>
 
       <div className="sidebarFooter">
         <div className="small">v0.1</div>
         <div className="small">PWA • iPhone Safari</div>
       </div>
+      {editMode && (
+        <div>
+          <button type="button" className="sidebarAddBtn" onClick={onAddCategory}>
+            + 카테고리 추가
+          </button>
+        </div>
+      )}
     </aside>
   );
 }
 
+function getPageTitleByPath(pages, path, fallbackTitle) {
+  const found = pages.find((page) => page.path === path);
+  return found?.title ?? fallbackTitle;
+}
+
 export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [editMode, setEditMode] = useState(() => {
+    const saved = readLocalStorageJSON(EDIT_MODE_KEY, false);
+    return Boolean(saved);
+  });
+  const [pages, setPages] = useState(() => {
+    const saved = readLocalStorageJSON(PAGES_STORAGE_KEY, PAGES_INITIAL);
+    return Array.isArray(saved) ? saved : PAGES_INITIAL;
+  });
   const [familyGroups, setFamilyGroups] = useState(() => {
-    try {
-      const saved = window.localStorage.getItem("ccc-family-groups-v1");
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch {
-      // ignore
-    }
-    return FAMILY_GROUPS_INITIAL;
+    const saved = readLocalStorageJSON(FAMILY_GROUPS_STORAGE_KEY, FAMILY_GROUPS_INITIAL);
+    return Array.isArray(saved) ? saved : FAMILY_GROUPS_INITIAL;
   });
 
   useEffect(() => {
     try {
-      window.localStorage.setItem("ccc-family-groups-v1", JSON.stringify(familyGroups));
+      window.localStorage.setItem(EDIT_MODE_KEY, JSON.stringify(editMode));
+    } catch {
+      // ignore
+    }
+  }, [editMode]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PAGES_STORAGE_KEY, JSON.stringify(pages));
+    } catch {
+      // ignore
+    }
+  }, [pages]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(FAMILY_GROUPS_STORAGE_KEY, JSON.stringify(familyGroups));
     } catch {
       // ignore
     }
@@ -411,6 +514,24 @@ export default function App() {
     setFamilyGroups((prev) =>
       prev.map((g) => (g.id === id ? { ...g, ...patch } : g)),
     );
+  };
+
+  const handleRenamePage = (id, title) => {
+    setPages((prev) =>
+      prev.map((page) => (page.id === id ? { ...page, title } : page)),
+    );
+  };
+
+  const handleAddCategory = () => {
+    const id = `note-${Date.now()}`;
+    const newPage = {
+      id,
+      title: "새 노트",
+      path: `/notes/${id}`,
+      type: "note",
+      fixed: false,
+    };
+    setPages((prev) => [...prev, newPage]);
   };
 
   const location = useLocation();
@@ -430,7 +551,15 @@ export default function App() {
       {mobileOpen && <div className="overlay" onClick={() => setMobileOpen(false)} />}
 
       <div className={"sidebarWrap" + (mobileOpen ? " open" : "")}>
-        <Sidebar onNavigate={() => setMobileOpen(false)} familyGroups={familyGroups} />
+        <Sidebar
+          onNavigate={() => setMobileOpen(false)}
+          familyGroups={familyGroups}
+          pages={pages}
+          editMode={editMode}
+          onToggleEditMode={() => setEditMode((prev) => !prev)}
+          onRenamePage={handleRenamePage}
+          onAddCategory={handleAddCategory}
+        />
       </div>
 
       <main className={"main" + (isFullBleed ? " main--fullBleed" : "")}>
@@ -446,17 +575,30 @@ export default function App() {
             }
           />
 
-          <Route path="/family" element={<Placeholder title="👨‍👩‍👧 가족순별 맨파워" />} />
+          <Route
+            path="/family"
+            element={<Placeholder title={getPageTitleByPath(pages, "/family", "👨‍👩‍👧 가족순별 맨파워")} />}
+          />
           <Route
             path="/family/:groupId"
-            element={<FamilyGroupPage groups={familyGroups} onUpdateGroup={handleUpdateFamilyGroup} />}
+            element={
+              <FamilyGroupPage
+                key={location.pathname}
+                groups={familyGroups}
+                onUpdateGroup={handleUpdateFamilyGroup}
+                editMode={editMode}
+              />
+            }
           />
-          <Route path="/curriculum" element={<Placeholder title="📚 가족순별 커리큘럼" />} />
+          <Route
+            path="/curriculum"
+            element={<Placeholder title={getPageTitleByPath(pages, "/curriculum", "📚 가족순별 커리큘럼")} />}
+          />
           <Route
             path="/schedule"
             element={
               <DocHub
-                title="📅 CCC 전체 일정표 (Google Calendar)"
+                title={getPageTitleByPath(pages, "/schedule", "📅 CCC 전체 일정표 (Google Calendar)")}
                 editUrl={CCC_CALENDAR_OPEN_URL}
                 embedUrl={CCC_CALENDAR_EMBED_URL}
                 buttonLabel="구글캘린더 열기 →"
@@ -464,9 +606,20 @@ export default function App() {
             }
           />
 
-          <Route path="/teams/bridge" element={<Placeholder title="🌉 기능순 - 브릿지순" />} />
-          <Route path="/teams/tongtong" element={<Placeholder title="🕊 기능순 - 통통순(통일순)" />} />
-          <Route path="/teams/praise" element={<Placeholder title="🎶 기능순 - 찬양순" />} />
+          <Route
+            path="/teams/bridge"
+            element={<Placeholder title={getPageTitleByPath(pages, "/teams/bridge", "🌉 기능순 - 브릿지순")} />}
+          />
+          <Route
+            path="/teams/tongtong"
+            element={<Placeholder title={getPageTitleByPath(pages, "/teams/tongtong", "🕊 기능순 - 통통순(통일순)")} />}
+          />
+          <Route
+            path="/teams/praise"
+            element={<Placeholder title={getPageTitleByPath(pages, "/teams/praise", "🎶 기능순 - 찬양순")} />}
+          />
+
+          <Route path="/notes/:noteId" element={<NotePage editMode={editMode} />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
