@@ -22,7 +22,7 @@ const FAMILY_GROUPS_INITIAL = [
   },
   {
     id: "coram",
-    title: "2 가족순 - 코람",
+    title: "2 가족순 - 코람데오",
     leader: "김덕훈",
     subLeaders: ["최인규"],
     notes: [
@@ -34,15 +34,16 @@ const FAMILY_GROUPS_INITIAL = [
   },
   {
     id: "cream",
-    title: "3 가족순 - 크림 (디반물)",
+    title: "3 가족순 - 크림 (디반물, 응용수리, 미래모빌리티, 신소재화학, 환경시스템공학, 식품생명공학)",
     leader: "조성윤",
     subLeaders: ["이은찬"],
     notes: [
       "은찬이가 가족순장이여도 될 듯, 박희영·이의진이 부가족순장",
-      "이의진, 이한호 별도 대화 필요",
+      "이의진, 이한호 별도 대화 필요 -> 이의진 순장 불가, 이한호 가족순에 마음 열기 시작함",
     ],
     membersBlock1: "조성윤, 이은찬, 박희영, 이의진, 이한호",
     membersBlock2: "강희준, 강대원, 최산, 박성준, 박찬민",
+    membersBlock3: "김홍집, 김재윤 (26학번 순원)"
   },
   {
     id: "david",
@@ -76,22 +77,22 @@ const FAMILY_GROUPS_INITIAL = [
   },
   {
     id: "yegrina",
-    title: "7 가족순 - 예그리나",
+    title: "7 가족순 - 에스더",
     leader: "윤어진",
     subLeaders: ["원희정"],
     notes: [
-      "부가족순장 원희정: 마음은 있고 긍정적이나 통학할 수도 있어 시간표 확정 후 다시 논의",
+      "부가족순장 원희정: 마음은 있고 긍정적이나 통학할 수도 있어 시간표 확정 후 다시 논의 -> 부가족 확정",
       "총무순장: 양선영",
     ],
     membersBlock1: "윤어진, 원희정, 양선영, 오소람",
-    membersBlock2: "권혜인, 최예윤",
+    membersBlock2: "권혜인, 최예윤 -> 권혜인 최예윤 ccc 탈퇴 이슈",
   },
   {
     id: "firstcome",
     title: "8 가족순 - 선착순 (전정·전기융·생공·스도·디헬공)",
     leader: "이소희",
     subLeaders: ["권소희", "이소민"],
-    notes: ["김채은 위치 조정 필요"],
+    notes: ["김채은 위치 조정 필요-> 여전히 유효한지?"],
     membersBlock1: "이소희, 이소민, 25이가희, 김채은, 문선우, 김다연, 권소희",
     membersBlock2: "",
   },
@@ -142,7 +143,7 @@ function Placeholder({ title }) {
         <div className="emptyTitle">여기부터 채우면 됨</div>
         <div className="emptyText">
           이 페이지는 아직 비어있어. <br />
-          다음 단계에서 구글 시트/닥스 링크(또는 iframe 임베드)로 바로 연결해줄게.
+          하단 가족순별 맨파워 사이드바 참조바람
         </div>
       </div>
     </PageFrame>
